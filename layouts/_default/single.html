@@ -3,12 +3,40 @@
 		<article>
 			<h1>{{ .Title }}</h1>
 			<b><time>{{ .Date.Format (default "2006-01-02 15:04:05" .Site.Params.dateFmt) }}</time></b>
-		       {{ range .Params.tags }}
-		           <a href="{{ "/tags/" | relLangURL }}{{ . | urlize }}">{{ . }}</a>
-        	       {{ end }}
-
+				{{ range .Params.tags }}
+					<a href="{{ "/tags/" | relLangURL }}{{ . | urlize }}">{{ . }}</a>
+				{{ end }}
 			<div>
-				{{ .Content }}
+				<!-- 
+					Based on natehn/blog-theme
+					https://github.com/natehn/blog-theme/blob/master/layouts/wiki/single.html
+				-->
+				{{- $Content := .Content -}}
+
+				{{- /* 
+				//   strict match, must contains any character (except line terminators) 
+				//   inside the double square brackets `[[<any-character>]]` 
+				*/ -}}
+				{{- $linkRE := `\[{2}(?U:.+)\]{2}` -}}
+				{{- $linkFound := findRE $linkRE $Content -}}
+
+				{{- /* Replace all wikilink with placeholder */ -}}
+				{{- $Content = $Content | replaceRE $linkRE `<!--wikilink-->` -}}
+
+				{{- range $wiki_link := $linkFound -}}
+				{{- $text := trim $wiki_link "[ ]" -}}
+				{{- $href := delimit (split ($text | lower ) " ") "-" -}}
+				
+				{{- $linkFmt := `<a href="/wiki/%s/">%s</a>` -}}
+				{{- $link := printf $linkFmt $href $text -}}
+
+				{{- /* Replace All Wikilink inside $Content */ -}} 
+				{{- $Content = replace $Content `<!--wikilink-->` $link 1 -}}
+
+				{{- end -}}
+
+				{{- /* Output */ -}}
+				{{- $Content | safeHTML -}}
 			</div>
 		</article>
 	</main>
