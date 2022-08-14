@@ -5,12 +5,14 @@ html {
   --bgcolor: #fff;
   --fontcolor: #444;
   --codebgcolor: #eee;
+  --bracketcolor: #ddd;
 }
 @media (prefers-color-scheme: dark) {
   :root {
     --bgcolor: #000;
     --fontcolor: #ccc;
     --codebgcolor: #222;
+    --bracketcolor: #333;
   }
 }
 body {
@@ -28,6 +30,9 @@ a:link,
 a:visited,
 a:active {
   color: var(--fontcolor);
+}
+.brackets {
+  color: var(--bracketcolor);
 }
 h1,
 h2,

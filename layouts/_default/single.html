@@ -27,7 +27,7 @@
 				{{- $text := trim $wiki_link "[ ]" -}}
 				{{- $href := delimit (split ($text | lower ) " ") "-" -}}
 				
-				{{- $linkFmt := `<a href="/wiki/%s/">%s</a>` -}}
+				{{- $linkFmt := `<span class="brackets">[[</span><a href="/wiki/%s/">%s</a><span class="brackets">]]</span>` -}}
 				{{- $link := printf $linkFmt $href $text -}}
 
 				{{- /* Replace All Wikilink inside $Content */ -}} 
