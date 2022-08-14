@@ -2,54 +2,72 @@ html {
   overflow-y: scroll;
 }
 :root {
-  --bgcolor: white;
+  --bgcolor: #fff;
   --fontcolor: #444;
-  --linkcolor: #00e;
-  --visitedcolor: #551a8b;
-  --precolor: #fff;
-  --prebgcolor: #000;
+  --codebgcolor: #eee;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bgcolor: black;
-    --fontcolor: white;
-    --linkcolor: #5bf;
-    --visitedcolor: #ae5ee0;
-    --precolor: #fff;
-    --prebgcolor: #383838;
+    --bgcolor: #000;
+    --fontcolor: #ccc;
+    --codebgcolor: #222;
   }
 }
 body {
+  width: 87.5%;
   max-width: 800px;
   margin: 40px auto;
   padding: 0 10px;
-  font: 14px/1.5 monospace;
+  font-family: sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.6em;
   color: var(--fontcolor);
   background: var(--bgcolor);
 }
-a:link {
-  color: var(--linkcolor);
-}
-a:visited {
-  color: var(--visitedcolor);
-}
+a:link,
+a:visited,
 a:active {
-  color: var(--visitedcolor);
+  color: var(--fontcolor);
 }
 h1,
 h2,
 h3 {
-  line-height: 1.2;
+  font-weight: 500;
+  margin-top: 2.5rem;
+  margin-bottom: 1.5rem;
+  line-height: 1;
 }
-p > code {
-  color: var(--precolor);
-  background: var(--prebgcolor);
-  padding: 2px;
+h1 {
+  font-size: 3rem;
+  margin-top: 4rem;
+}
+h2 {
+  font-size: 2rem;
+}
+h3 {
+  font-size: 1.5rem;
+}
+li,
+p,
+dl,
+ol,
+ul {
+  margin-bottom: 1rem;
+}
+code {
+  background: var(--codebgcolor);
+  font-family: monospace;
+  border-radius: 3px;
+  font-size: 0.8em;
+  padding: 0.1em 0.5em;
+  overflow-wrap: break-word;
+}
+pre > code {
+  background: transparent;
 }
 pre {
-  color: var(--precolor);
-  background: var(--prebgcolor);
-  padding: 24px;
+  background: var(--codebgcolor);
+  padding: 1.2em;
   overflow-x: auto;
 }
 article {
