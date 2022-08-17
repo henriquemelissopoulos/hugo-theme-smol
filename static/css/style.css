@@ -6,6 +6,10 @@ html {
   --fontcolor: #444;
   --codebgcolor: #eee;
   --bracketcolor: #ddd;
+  --indentguideline: #eee;
+  --blockquotebgcolor: #eee;
+  --blockquotelinecolor: #ddd;
+  --wikilinkhoverbgcolor: #eee;
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -13,6 +17,10 @@ html {
     --fontcolor: #ccc;
     --codebgcolor: #222;
     --bracketcolor: #333;
+    --indentguideline: #222;
+    --blockquotebgcolor: #111;
+    --blockquotelinecolor: #222;
+    --wikilinkhoverbgcolor: #222;
   }
 }
 body {
@@ -22,17 +30,21 @@ body {
   padding: 0 10px;
   font-family: sans-serif;
   font-size: 1.125rem;
-  line-height: 1.6em;
+  line-height: 1.8rem;
   color: var(--fontcolor);
   background: var(--bgcolor);
 }
-a:link,
-a:visited,
-a:active {
+a {
   color: var(--fontcolor);
 }
 .brackets {
   color: var(--bracketcolor);
+}
+.wikilink:hover {
+  background-color: var(--wikilinkhoverbgcolor);
+}
+.wikilink > a {
+  text-decoration: none;
 }
 h1,
 h2,
@@ -59,12 +71,25 @@ ol,
 ul {
   margin-bottom: 1rem;
 }
+ul {
+  position: relative;
+  list-style-type: none;
+}
+/* Identation Guideline aligned to parent */
+ul::before {
+  content: "";
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  border: 1.5px solid var(--indentguideline);
+}
 code {
   background: var(--codebgcolor);
   font-family: monospace;
   border-radius: 3px;
-  font-size: 0.8em;
-  padding: 0.1em 0.5em;
+  font-size: 0.9rem;
+  padding: 0.1rem 0.3rem;
   overflow-wrap: break-word;
 }
 pre > code {
@@ -72,8 +97,16 @@ pre > code {
 }
 pre {
   background: var(--codebgcolor);
-  padding: 1.2em;
+  padding: 1.2rem;
   overflow-x: auto;
+}
+blockquote {
+  padding: 1.5rem;
+  background: var(--blockquotebgcolor);
+  border-left: 3px solid var(--blockquotelinecolor);
+  font-family: serif;
+  font-style: italic;
+  margin: 0;
 }
 article {
   padding: 24px 0;
