@@ -103,10 +103,9 @@ pre {
 blockquote {
   padding: 1.5rem;
   background: var(--blockquotebgcolor);
-  border-left: 3px solid var(--blockquotelinecolor);
   font-family: serif;
   font-style: italic;
-  margin: 0;
+  margin: 24px 0 24px 0;
 }
 article {
   padding: 24px 0;
