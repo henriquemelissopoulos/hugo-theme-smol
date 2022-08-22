@@ -20,7 +20,7 @@
 				{{ $wikilinkWithTextRE := "\\[\\[([^\\]\\|\\r\\n]+?)\\|([^\\]\\|\\r\\n]+?)\\]\\]" }}
 				{{ $wikilinkRE := "\\[\\[([^\\]\\|\\r\\n]+?)\\]\\]" }}
 				
-				{{ $linkFmt := `<span class="wikilink"><a href="/wiki/%s/"><span class="brackets">[[</span>%s<span class="brackets">]]</span></a></span>` }}
+				{{ $linkFmt := `<span class="wikilink"><a href="%s"><span class="brackets">[[</span>%s<span class="brackets">]]</span></a></span>` }}
 				{{ $linkMissingFmt := `<span class="missingwiki"><span class="brackets">[[</span>%s<span class="brackets">]]</span></span>` }}
 				
 				{{ $content := .Content }}
@@ -40,12 +40,15 @@
 					{{/*  Inicializa a variavel com um texto de erro, caso por algum motivo o processo falhe  */}}
 					{{ $convertedLinkSpan := "ERROR CONVERTING WIKILINK" }}
 					
-					{{/*  Valida se existe a pagina do wikilink, relativo a pagina atual  */}}
-					{{/*  Se não existir um destino, processa com um formato diferente  */}}
-					{{ with print "/" $reference | $.Site.GetPage }}
+					{{/*  Valida se existe a pagina do wikilink, relativo a pagina atual
+						e retorna no contexto (`.`) o link relativo,
+						funciona para mais de uma pasta de `content`.
+						Se não existir um destino, processa o link com um formato próprio  */}}
+					{{ with relref $.Page $reference }}
 						{{/*  Titulo do link sera ou o nome da pagina destino ou a referencia original do link  */}}
 						{{ $title := or ($.Site.GetPage $reference).Title $reference}}
-						{{ $convertedLinkSpan = printf $linkFmt $reference $title }}
+						{{/*  O `.` é o resultado do `with`, no caso, o link relativo  */}}
+						{{ $convertedLinkSpan = printf $linkFmt . $title }}
 					{{ else }}
 						{{ $convertedLinkSpan = printf $linkMissingFmt $reference }}
 					{{ end }}
@@ -64,12 +67,12 @@
 					
 					{{ $convertedLinkSpan := "ERROR CONVERTING WIKILINK" }}
 					
-					{{ with print "/" $reference | $.Site.GetPage }}
-						{{ $convertedLinkSpan = printf $linkFmt $reference $title }}
+					{{ with relref $.Page $reference }}
+						{{ $convertedLinkSpan = printf $linkFmt . $title }}
 					{{ else }}
 						{{ $convertedLinkSpan = printf $linkMissingFmt $title }}
 					{{ end }}
-					
+
 					{{ $content = replaceRE $exactWikilingWithTextRE $convertedLinkSpan $content }}
 				{{ end }}
 				
