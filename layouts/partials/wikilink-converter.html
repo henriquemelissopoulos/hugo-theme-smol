@@ -1,0 +1,70 @@
+
+<!-- 
+	Based on:
+	
+	quinncasey.com
+	https://quinncasey.com/tools/hugo-wikilink-support/
+	
+	natehn/blog-theme
+	https://github.com/natehn/blog-theme/blob/master/layouts/wiki/single.html
+-->
+{{ $wikilinkWithTextRE := "\\[\\[([^\\]\\|\\r\\n]+?)\\|([^\\]\\|\\r\\n]+?)\\]\\]" }}
+{{ $wikilinkRE := "\\[\\[([^\\]\\|\\r\\n]+?)\\]\\]" }}
+
+{{ $linkFmt := `<span class="wikilink"><a href="%s"><span class="brackets">[[</span>%s<span class="brackets">]]</span></a></span>` }}
+{{ $linkMissingFmt := `<span class="missingwiki"><span class="brackets">[[</span>%s<span class="brackets">]]</span></span>` }}
+
+{{ $content := .Content }}
+
+{{/*  uma melhoria futura seria otimizar esse processo diminuindo a quantidade de vezes
+	que entra no loop, por exemplo, se tiver 5 wikilinks [[hugo]], ele entra nesse loop
+	5 vezes, mesmo já tendo substituido todos os [[hugo]] na primeira passada  */}}
+
+{{/*  Loop em todos os wikilinks encontrador pelo regular expression no content  */}}
+{{ range $wikilink := (findRE $wikilinkRE .Content) }}
+	{{/*  Retira as [[]] do wikilink */}}
+	{{ $reference := replaceRE $wikilinkRE "$1" $wikilink }}
+	{{/*  Cria um padrão de regular expression para o wikilink,
+			esse padrão será usado posteriomente para trocar o wikilink pelo link HTML  */}}
+	{{ $exactWikilingRE :=  printf "\\[\\[%s\\]\\]" $reference }}
+	
+	{{/*  Inicializa a variavel com um texto de erro, caso por algum motivo o processo falhe  */}}
+	{{ $convertedLinkSpan := "ERROR CONVERTING WIKILINK" }}
+	
+	{{/*  Valida se existe a pagina do wikilink, relativo a pagina atual
+		e retorna no contexto (`.`) o link relativo,
+		funciona para mais de uma pasta de `content`.
+		Se não existir um destino, processa o link com um formato próprio  */}}
+	{{ with relref $.Page $reference }}
+		{{/*  Titulo do link sera ou o nome da pagina destino ou a referencia original do link  */}}
+		{{ $title := or ($.Site.GetPage $reference).Title $reference}}
+		{{/*  O `.` é o resultado do `with`, no caso, o link relativo  */}}
+		{{ $convertedLinkSpan = printf $linkFmt . $title }}
+	{{ else }}
+		{{ $convertedLinkSpan = printf $linkMissingFmt $reference }}
+	{{ end }}
+	
+	{{/*  Troca o wikilink pelo link html, baseado no regular expression criado anteriormente  */}}
+	{{ $content = replaceRE $exactWikilingRE $convertedLinkSpan $content }}
+
+{{ end }}
+
+{{/*  Outro loop para pegar o formato de wikilink com texto, exemplo: [[hugo|TEST]]  
+	funciona basicamente igual ao loop de cima  */}}
+{{ range $wikilink := (findRE $wikilinkWithTextRE $content) }}
+	{{ $reference := replaceRE $wikilinkWithTextRE "$1" $wikilink }}
+	{{ $title := replaceRE $wikilinkWithTextRE "$2" $wikilink }}
+	{{ $exactWikilingWithTextRE := (printf "\\[\\[%s\\|%s\\]\\]" $reference $title) }}
+	
+	{{ $convertedLinkSpan := "ERROR CONVERTING WIKILINK" }}
+	
+	{{ with relref $.Page $reference }}
+		{{ $convertedLinkSpan = printf $linkFmt . $title }}
+	{{ else }}
+		{{ $convertedLinkSpan = printf $linkMissingFmt $title }}
+	{{ end }}
+	
+	{{ $content = replaceRE $exactWikilingWithTextRE $convertedLinkSpan $content }}
+{{ end }}
+
+{{ return $content }}
