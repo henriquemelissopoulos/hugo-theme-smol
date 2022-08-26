@@ -30,7 +30,6 @@
         The findRE `1` parameter is to stop in the first result  */}}
     {{ if or (findRE $wikilingWithExactReferenceRE .RawContent 1) (findRE $wikilingWithTitleAndReferenceRE .RawContent 1) }}
         {{ $backlinks = $backlinks | append . }}
-        <code>{{ print . }}</code></br>
     {{ end }}
 {{ end }}
 
