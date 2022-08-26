@@ -8,7 +8,7 @@
 				{{ end }}
 			<div>
 				{{ $content := .Content }}
-				{{ $content = partial "wikilink-converter.html" . }}
+				{{ $content := partial "wikilink-converter.html" . }}
 				{{ $content | safeHTML }}
 			</div>
 		</article>
