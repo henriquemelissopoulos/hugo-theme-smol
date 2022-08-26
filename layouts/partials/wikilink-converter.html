@@ -13,8 +13,8 @@
 	natehn/blog-theme
 	https://github.com/natehn/blog-theme/blob/master/layouts/wiki/single.html
 -->
-{{ $wikilinkWithTextRE := "\\[\\[([^\\]\\|\\r\\n]+?)\\|([^\\]\\|\\r\\n]+?)\\]\\]" }}
-{{ $wikilinkRE := "\\[\\[([^\\]\\|\\r\\n]+?)\\]\\]" }}
+{{ $wikilinkRE := `\[{2}([^\]|\r\n]+?)\]{2}` }}
+{{ $wikilinkWithTitleRE := `\[{2}([^\]\|\r\n]+?)\|([^\]\|\r\n]+?)\]{2}` }}
 
 {{ $linkFmt := `<span class="wikilink"><a href="%s"><span class="brackets">[[</span>%s<span class="brackets">]]</span></a></span>` }}
 {{ $linkMissingFmt := `<span class="missingwiki"><span class="brackets">[[</span>%s<span class="brackets">]]</span></span>` }}
@@ -31,7 +31,7 @@
 	{{ $reference := replaceRE $wikilinkRE "$1" $wikilink }}
 	{{/*  Cria um padrão de regular expression para o wikilink,
 			esse padrão será usado posteriomente para trocar o wikilink pelo link HTML  */}}
-	{{ $exactWikilingRE :=  printf "\\[\\[%s\\]\\]" $reference }}
+	{{ $wikilingWithExactReferenceRE := print `\[{2}` $reference `\]{2}` }}
 	
 	{{/*  Inicializa a variavel com um texto de erro, caso por algum motivo o processo falhe  */}}
 	{{ $convertedLinkSpan := "ERROR CONVERTING WIKILINK" }}
@@ -50,16 +50,16 @@
 	{{ end }}
 	
 	{{/*  Troca o wikilink pelo link html, baseado no regular expression criado anteriormente  */}}
-	{{ $content = replaceRE $exactWikilingRE $convertedLinkSpan $content }}
+	{{ $content = replaceRE $wikilingWithExactReferenceRE $convertedLinkSpan $content }}
 
 {{ end }}
 
 {{/*  Outro loop para pegar o formato de wikilink com texto, exemplo: [[hugo|TEST]]  
 	funciona basicamente igual ao loop de cima  */}}
-{{ range $wikilink := (findRE $wikilinkWithTextRE $content) }}
-	{{ $reference := replaceRE $wikilinkWithTextRE "$1" $wikilink }}
-	{{ $title := replaceRE $wikilinkWithTextRE "$2" $wikilink }}
-	{{ $exactWikilingWithTextRE := (printf "\\[\\[%s\\|%s\\]\\]" $reference $title) }}
+{{ range $wikilink := (findRE $wikilinkWithTitleRE $content) }}
+	{{ $reference := replaceRE $wikilinkWithTitleRE "$1" $wikilink }}
+	{{ $title := replaceRE $wikilinkWithTitleRE "$2" $wikilink }}
+	{{ $wikilingWithTitleAndReferenceRE := (print `\[{2}` $reference `\|` $title `\]{2}`) }}
 	
 	{{ $convertedLinkSpan := "ERROR CONVERTING WIKILINK" }}
 	
@@ -69,7 +69,7 @@
 		{{ $convertedLinkSpan = printf $linkMissingFmt $title }}
 	{{ end }}
 	
-	{{ $content = replaceRE $exactWikilingWithTextRE $convertedLinkSpan $content }}
+	{{ $content = replaceRE $wikilingWithTitleAndReferenceRE $convertedLinkSpan $content }}
 {{ end }}
 
 {{ return $content }}
