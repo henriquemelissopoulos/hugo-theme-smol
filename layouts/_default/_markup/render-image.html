@@ -1,11 +1,6 @@
-{{ if .Title }}
 <figure>
-  <img src="{{ .Destination | safeURL }}" alt="{{ .Text }}" />
-  <figcaption>{{ .Title }}</figcaption>
+  <img src="{{ relURL .Destination | safeURL }}" alt="{{ .Text | safeHTML}}" />
+  {{ with .Title}}
+    <figcaption>{{ . }}</figcaption>
+  {{ end }}
 </figure>
-{{ else }}
-<figure>
-  <img src="{{ .Destination | safeURL }}" alt="{{ .Text }}" />
-</figure>
-{{ end }}
-
